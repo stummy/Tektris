@@ -14,11 +14,8 @@ enum Orientation: Int, CustomStringConvertible {
     
     case Zero = 0, Ninety, OneEighty, TwoSeventy
     
-    
     var description: String {
-        
         switch self {
-            
         case .Zero:
             return "0"
         case .Ninety:
@@ -30,9 +27,11 @@ enum Orientation: Int, CustomStringConvertible {
         }
     }
     
+    
     static func random() -> Orientation {
         return Orientation(rawValue:Int(arc4random_uniform(NumOrientations)))!
     }
+    
     
     static func rotate(orientation: Orientation, clockwise: Bool) -> Orientation {
         var rotated = orientation.rawValue + (clockwise ? 1 : -1)
@@ -85,7 +84,6 @@ class Shape: Hashable, CustomStringConvertible {
         guard let bottomBlocks = bottomBlocksForOrientations[orientation] else {
             return []
         }
-        
         return bottomBlocks
     }
     
@@ -100,6 +98,7 @@ class Shape: Hashable, CustomStringConvertible {
         return "\(color) block facing \(orientation): \(blocks[FirstBlockIdx]), \(blocks[SecondBlockIdx]), \(blocks[ThirdBlockIdx]), \(blocks[FourthBlockIdx])"
     }
     
+    
     init(column: Int, row: Int, color: BlockColor, orientation: Orientation) {
         self.color = color
         self.column = column
@@ -109,9 +108,11 @@ class Shape: Hashable, CustomStringConvertible {
         initializeBlocks()
     }
     
+    
     convenience init(column: Int, row: Int) {
         self.init(column: column, row: row, color: BlockColor.random(), orientation: Orientation.random())
     }
+    
     
     final func initializeBlocks() {
         guard let blockRowColumnTranslations = blockRowColumnPositions[orientation] else {
@@ -122,6 +123,7 @@ class Shape: Hashable, CustomStringConvertible {
             return Block(column: column + diff.columnDiff, row: row + diff.rowDiff, color: color)
         }
     }
+    
     
     final func rotateBlocks(orientation: Orientation) {
         guard let blockRowColumnTranslation: Array<(columnDiff: Int, rowDiff: Int)> = blockRowColumnPositions[orientation] else {
@@ -134,9 +136,40 @@ class Shape: Hashable, CustomStringConvertible {
         }
     }
     
+    
+    final func rotateClockwise() {
+        let newOrientation = Orientation.rotate(orientation: orientation, clockwise: true)
+        rotateBlocks(orientation: newOrientation)
+        orientation = newOrientation
+    }
+    
+    
+    final func rotateCounterClockwise() {
+        let newOrientation = Orientation.rotate(orientation: orientation, clockwise: false)
+        rotateBlocks(orientation: newOrientation)
+        orientation = newOrientation
+    }
+    
+    
     final func lowerShapeByOneRow() {
         shiftBy(columns: 0, rows: 1)
     }
+    
+    
+    final func raiseShapeByOneRow() {
+        shiftBy(columns: 0, rows: -1)
+    }
+    
+    
+    final func shiftRightByOneColumn() {
+        shiftBy(columns: 1, rows: 0)
+    }
+    
+    
+    final func shiftLeftByOneColumn() {
+        shiftBy(columns: -1, rows: 0)
+    }
+    
     
     final func shiftBy(columns: Int, rows: Int) {
         self.column += columns
@@ -148,11 +181,13 @@ class Shape: Hashable, CustomStringConvertible {
         }
     }
     
+    
     final func moveTo(column: Int, row: Int) {
         self.column = column
         self.row = row
         rotateBlocks(orientation: orientation)
     }
+    
     
     final class func random(startingColumn: Int, startingRow: Int) -> Shape {
         switch Int(arc4random_uniform(NumShapeTypes)) {
@@ -172,8 +207,8 @@ class Shape: Hashable, CustomStringConvertible {
             return ZShape(column: startingColumn, row: startingRow)
         }
     }
-
 }
+
 
 func ==(lhs: Shape, rhs: Shape) -> Bool {
     return lhs.row == rhs.row && lhs.column == rhs.column

@@ -17,7 +17,6 @@ enum BlockColor: Int, CustomStringConvertible {
     var spriteName: String {
         
         switch self {
-            
         case .Blue:
             return "blue"
         case .Orange:
@@ -38,10 +37,10 @@ enum BlockColor: Int, CustomStringConvertible {
         return self.spriteName
     }
     
+    
     static func random() -> BlockColor {
         return BlockColor(rawValue: Int(arc4random_uniform(NumberOfColors)))!
     }
-    
 }
 
 
@@ -73,6 +72,7 @@ class Block: Hashable, CustomStringConvertible {
         self.color = color
     }
 }
+
 
 func ==(lhs: Block, rhs: Block) -> Bool {
     return lhs.column == rhs.column && lhs.row == rhs.row && lhs.color.rawValue == rhs.color.rawValue
